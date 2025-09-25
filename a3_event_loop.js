@@ -39,13 +39,19 @@ function runA3(){
     // Schedule a macrotask (should be LAST overall):
     // TODO: set a timeout that logs "6 timeout"
 
+    setTimeout(() => log("6 timeout"), 0);
+
     // Schedule a microtask via Promise.then:
     //   Inside that microtask, also enqueue ANOTHER microtask that logs "5 microtask: nested"
     // TODO:
-
-
+    Promise.resolve().then(() => {
+        log("3 microtask: promise.then");
+        queueMicrotask(() => log("5 microtask: nested"));
+    });
+    
     // Schedule a queueMicrotask that logs "4 microtask: queueMicrotask"
     // TODO:
+    queueMicrotask(() => log("4 microtask: queueMicrotask"));
 
     // End of synchronous section:
     log("2 sync end");
@@ -64,4 +70,11 @@ function runA3(){
 }
 
 // Expose for HTML button
-window.runA3 = runA3;
+if (typeof window !== "undefined") {
+    // если в браузере → вешаем на кнопку
+    window.runA3 = runA3;
+  } else {
+    // если в Node → сразу запускаем
+    runA3();
+  }
+  
